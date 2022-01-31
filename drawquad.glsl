@@ -1,10 +1,9 @@
 
 precision mediump float;
 uniform sampler2D prevState;
-uniform sampler2D video;
+varying vec2 uv;
 uniform vec2 resolution;
 uniform float time;
-varying vec2 uv;
 
 float random (vec2 st) {
     return fract(sin(dot(st.xy, vec2(15.6234636, 70.3453425))) * 432113.12354125);
@@ -45,8 +44,7 @@ float fbm (vec2 st) {
 
 void main() {
     vec2 st = gl_FragCoord.xy/resolution.xy;
-    vec3 last = texture2D( prevState, 1.0 - uv * fbm(uv) ).rgb;
-    vec3 videocolor = texture2D( video, uv ).rgb;
-    vec3 feedback = last * .95 + videocolor * .05;
-    gl_FragColor = vec4( feedback, 1. );
+    vec3 color  = texture2D(prevState, 1.0 - uv * fbm(uv)).rgb;
+    color *= mix(vec3(2.0, 0.0, 0.0), vec3(0.0, 0.0, 2.0), st.y);
+    gl_FragColor = vec4(color, 1.0);
 }
